@@ -35,12 +35,13 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans JP",s
 a{color:var(--down)}
 button{font-family:inherit}
 
-/* ---------- header band ---------- */
-.band{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#eaf2f9;padding:18px 16px 14px}
-.band-in{max-width:1080px;margin:0 auto}
-.band .date{font-size:12.5px;color:#9db8cf;letter-spacing:.04em}
-.band h1{margin:2px 0 4px;font-size:23px;font-weight:900;letter-spacing:.02em;color:#fff}
-.band .lead{margin:0;font-size:13.5px;color:#c6d7e8;max-width:640px}
+/* ---------- info (collapsible, hidden by default) ---------- */
+.info-wrap{display:none;background:linear-gradient(135deg,var(--navy),var(--navy2));color:#eaf2f9;padding:16px 16px 14px}
+.info-wrap.open{display:block}
+.info-in{max-width:1080px;margin:0 auto}
+.info-wrap .date{font-size:12.5px;color:#9db8cf;letter-spacing:.04em}
+.info-wrap h1{margin:2px 0 4px;font-size:23px;font-weight:900;letter-spacing:.02em;color:#fff}
+.info-wrap .lead{margin:0;font-size:13.5px;color:#c6d7e8;max-width:640px}
 .snap{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .snap .s{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:6px 10px;font-size:12.5px;color:#dce9f5}
 .snap .s b{color:#fff;font-size:14px}
@@ -55,6 +56,10 @@ button{font-family:inherit}
 .tab .cnt{font-size:11px;background:var(--chip);border-radius:99px;padding:1px 7px;margin-left:5px;font-weight:700;color:var(--sub)}
 .tab.on{color:var(--ink);border-bottom-color:var(--up)}
 .tab.on .cnt{background:var(--up);color:#fff}
+.infobtn{appearance:none;border:0;background:none;margin-left:auto;align-self:center;padding:8px 11px;font-size:12.5px;font-weight:700;color:var(--sub);border:1px solid var(--line);border-radius:99px;white-space:nowrap;cursor:pointer;flex:none}
+.infobtn:hover{color:var(--ink)}
+.infobtn[aria-expanded="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+@media (prefers-color-scheme: dark){.infobtn[aria-expanded="true"]{background:#2a4a6e;border-color:#2a4a6e}}
 
 main{max-width:1080px;margin:0 auto;padding:16px 14px 40px}
 .panel{display:none}
@@ -176,60 +181,38 @@ footer{max-width:1080px;margin:0 auto;padding:0 14px 34px;font-size:12px;color:v
 </head>
 <body>
 
-<header class="band">
-  <div class="band-in">
-    <div class="date">2026年11月7日（土）時点の記録</div>
-    <h1>株式台帳</h1>
-    <p class="lead">ゴリコロと株リアルライブ（株リア）の動画で挙がった銘柄を記録し、言及後の経過をずっと見返しながら学ぶための台帳。「市場」で日ごとの相場（前夜の米国→東京）と理由をたどり、区分ごとのタブで事例を読み返せる。</p>
-    <div class="snap num">
-      <span class="s">台帳 <b>4,435</b> 銘柄</span>
-      <span class="s">監視銘柄 <b>23</b> 件</span>
-      <span class="s">検証の期限到来 <b>35</b> 件</span>
-      <span class="s">検証済み <b>35</b> 件（○16件・×15件・△4件）</span>
-      <span class="s warn">台帳の株価は <b>11月2日分</b> まで（検証分は11月6日分まで反映済み）</span>
-    </div>
-  </div>
-</header>
-
 <nav class="tabbar"><div class="tabbar-in" id="tabbar">
-  <button class="tab on" data-tab="today">今日<span class="cnt">35</span></button>
-  <button class="tab" data-tab="markets">市場</button>
+  <button class="tab on" data-tab="markets">市場</button>
   <button class="tab" data-tab="limits">ストップ高・安<span class="cnt">7</span></button>
   <button class="tab" data-tab="goods">引け後の好材料<span class="cnt">4</span></button>
   <button class="tab" data-tab="stocks">個別解説<span class="cnt">12</span></button>
   <button class="tab" data-tab="ledger">台帳<span class="cnt">4,435</span></button>
   <button class="tab" data-tab="video">動画要約</button>
+  <button class="infobtn" id="infobtn" aria-expanded="false" aria-controls="info">ⓘ 情報</button>
 </div></nav>
 
-<main>
-<!-- ================= 今日の検証 ================= -->
-<section class="panel on" id="p-today">
-  <div class="stats num">
-    <div class="stat"><div class="k">期限が来た検証</div><div class="v" id="st-due">35<small> 件</small></div><div class="d" id="st-due-d">11/4期限 21件 ＋ 11/5期限 7件 ＋ 11/6期限 7件</div></div>
-    <div class="stat"><div class="k">判定済み</div><div class="v" id="st-done">35<small> 件</small></div><div class="d" id="st-done-d">○ 16件 ・ × 15件 ・ △ 4件</div></div>
-    <div class="stat"><div class="k">的中率（引け後の好材料）</div><div class="v" id="st-gm">75<small>%</small></div><div class="d" id="st-gm-d">翌日チェック 4件中 ○ 3件・△ 1件</div></div>
-    <div class="stat"><div class="k">次の期限</div><div class="v" id="st-next">11/9</div><div class="d" id="st-next-d">4営業日後 7件</div></div>
+<div class="info-wrap" id="info">
+  <div class="info-in">
+    <div class="date">2026年11月7日（土）時点の記録</div>
+    <h1>株式台帳</h1>
+    <p class="lead">動画で挙がった銘柄と、その後の値動きを記録する台帳。</p>
+    <div class="snap num">
+      <span class="s">台帳 <b>4,435</b> 銘柄</span>
+      <span class="s">監視銘柄 <b>23</b> 件</span>
+      <span class="s warn">台帳の株価は <b>11月2日分</b> まで</span>
+    </div>
   </div>
-  <p class="note">検証ルール：言及の翌日・1週間後・2週間後・3週間後・1ヶ月後・3ヶ月後・6ヶ月後に、基準価格から見立てどおりに動いたかを見る（ストップ高安は1週間、営業日ごとに追跡）。<b>2026年11月7日時点で期限が来た35件はすべて判定済み（○16件・×15件・△4件）</b>で、各行に検証日の株価と基準比を表示している。まだ株価が入っていないチェックポイントだけが「判定待ち」になる。</p>
-  <h2 class="sec">期限到来 ― 翌日チェック（11/4期限）<span class="num" style="color:var(--sub);font-size:13px" id="h-next-cnt"> 21件</span></h2>
-  <div id="due-next"></div>
-  <h2 class="sec">期限到来 ― ストップ高安の追跡（11/5・11/6期限）<span class="num" style="color:var(--sub);font-size:13px" id="h-limit-cnt"> 14件</span></h2>
-  <div id="due-limit"></div>
-  <h2 class="sec">これからの検証予定</h2>
-  <div id="upcoming"></div>
-  <h2 class="sec">市場の経過観察</h2>
-  <div class="rowline"><div class="main"><span class="badge b-sec">NY市場</span> <span class="sname">10/30の見立て（東京は売り先行）の経過確認</span><div class="said">期限：2026年11月16日（2週間後の経過観察）</div></div><span class="badge b-wait">予定</span></div>
-  <div class="rowline"><div class="main"><span class="badge b-sec">東京市場</span> <span class="sname">11/2の見通し（200日線が下値の目安）の経過確認</span><div class="said">期限：2026年11月17日（2週間後の経過観察）</div></div><span class="badge b-wait">予定</span></div>
-</section>
+</div>
 
+<main>
 <!-- ================= 市場 ================= -->
-<section class="panel" id="p-markets">
+<section class="panel on" id="p-markets">
   <div class="pager">
     <button class="pgbtn" id="mkt-prev">◀ 前日</button>
     <div class="pdate num" id="mkt-date"></div>
     <button class="pgbtn" id="mkt-next">翌日 ▶</button>
   </div>
-  <p class="note">前夜の米国市場とその日の東京市場を並べ、指数が<b>いくらからいくらへ動いたか（±と%）</b>と、その日の理由を日付ごとにたどる画面。記録済みの日はボタンで前後へ送って見返せる。</p>
+  <p class="note">米国（前夜）と東京の相場を日付ごとに表示。ボタンで切り替え。</p>
   <div id="mkt-ny"></div>
   <div id="mkt-tokyo"></div>
   <h2 class="sec">業種別変動（33業種・%）</h2>
@@ -240,29 +223,44 @@ footer{max-width:1080px;margin:0 auto;padding:0 14px 34px;font-size:12px;color:v
 
 <!-- ================= ストップ高・安 ================= -->
 <section class="panel" id="p-limits">
-  <p class="note">ストップ高・ストップ安になった銘柄の<b>事例集</b>。なった理由と、その後1週間（翌日〜4営業日後＋1週間後）の経過を、終わったものも含めてずっと見返せる。カードをタップすると銘柄詳細（価格履歴・言及・経過）が開く。</p>
+  <div class="pager">
+    <button class="pgbtn" id="lim-prev">◀ 前日</button>
+    <div class="pdate num" id="lim-date"></div>
+    <button class="pgbtn" id="lim-next">翌日 ▶</button>
+  </div>
+  <p class="note">理由と、その後1週間の経過。タップで銘柄詳細。</p>
   <div id="limits-list"></div>
 </section>
 
 <!-- ================= 引け後の好材料 ================= -->
 <section class="panel" id="p-goods">
-  <p class="note">引け後に発表された好材料で挙がった銘柄の<b>事例集</b>。ゴリコロは星の数で強さを表示（★ 上昇期待 ／ ★★ 大幅上昇期待 ／ ★★★ ストップ高濃厚）。言及後にどう動いたかは各カードの経過チェックポイントで追える。カードをタップすると銘柄詳細が開く。</p>
+  <div class="pager">
+    <button class="pgbtn" id="gd-prev">◀ 前日</button>
+    <div class="pdate num" id="gd-date"></div>
+    <button class="pgbtn" id="gd-next">翌日 ▶</button>
+  </div>
+  <p class="note">引け後の好材料で挙がった銘柄。★ 上昇期待／★★ 大幅上昇／★★★ ストップ高濃厚。タップで詳細。</p>
   <div id="goods-list"></div>
 </section>
 
 <!-- ================= 個別解説 ================= -->
 <section class="panel" id="p-stocks">
+  <div class="pager">
+    <button class="pgbtn" id="st-prev">◀ 前日</button>
+    <div class="pdate num" id="st-date"></div>
+    <button class="pgbtn" id="st-next">翌日 ▶</button>
+  </div>
   <div class="chips" id="stocks-chips">
     <button class="fchip on" data-f="個別解説">個別解説 6</button>
     <button class="fchip" data-f="ニュース">ニュース 6</button>
   </div>
-  <p class="note">動画で取り上げられた銘柄の<b>事例集</b>。何と言われ、その後どう動いたかを経過チェックポイント付きで見返せる。カードをタップすると銘柄詳細が開く。</p>
+  <p class="note">動画で取り上げられた銘柄と、その後の経過。タップで詳細。</p>
   <div id="stocks-list"></div>
 </section>
 
 <!-- ================= 台帳 ================= -->
 <section class="panel" id="p-ledger">
-  <p class="note">全4,435銘柄（株式3,918＋ETF・投信等517）。株価は2026年11月2日分まで。前日比は11/2と10/30の終値比較。行をタップすると保持している全日付の株価が出る。</p>
+  <p class="note">全4,435銘柄（株式3,918＋ETF・投信等517）。株価は11月2日まで。前日比は11/2と10/30の比較。タップで全日付の株価。</p>
   <div class="controls">
     <input type="search" id="q" placeholder="コード・銘柄名で検索（例：8035、東京エレク）" />
     <select id="sort">
@@ -289,17 +287,22 @@ footer{max-width:1080px;margin:0 auto;padding:0 14px 34px;font-size:12px;color:v
 
 <!-- ================= 動画要約 ================= -->
 <section class="panel" id="p-video">
+  <div class="pager">
+    <button class="pgbtn" id="vd-prev">◀ 前日</button>
+    <div class="pdate num" id="vd-date"></div>
+    <button class="pgbtn" id="vd-next">翌日 ▶</button>
+  </div>
   <div id="video-main"></div>
   <div class="card">
     <span class="badge b-ch">株リアルライブ（株リア）</span>
-    <div class="vtitle" style="font-size:15px">2チャンネル目の記録はこれから</div>
-    <p style="margin:0;font-size:13.5px;color:var(--sub)">信頼性確保のため、ゴリコロと株リアの2チャンネル併用が決まっている。株リアの記録対象は<b style="color:var(--ink)">本編ロングのみ</b>（短編とメンバー限定は対象外）。星と最終まとめ表がないため、注目度は「どの章で扱われたか＋タイトル掲載」で記録する。初回の記録はまだ入っていない。</p>
+    <div class="vtitle" style="font-size:15px">記録はまだなし</div>
+    <p style="margin:0;font-size:13.5px;color:var(--sub)">対象は<b style="color:var(--ink)">本編ロングのみ</b>。注目度は章とタイトル掲載で記録。</p>
   </div>
 </section>
 </main>
 
 <footer>
-  データ：株式台帳（試作6）2026年11月2日時点 ・ 市場タブの指数は2026年10月27日〜11月6日分（米国は各日の前夜分）・ 市場記録と銘柄の言及は2026年11月2日のゴリコロ動画の要約から作成 ・ 検証結果は2026年11月7日時点（期限到来35件を判定済み：○16件・×15件・△4件）・ 台帳の株価は11月2日分まで。このページは記録時点のスナップショットで、開いても自動更新はされない。
+  株式台帳（試作6）・2026年11月2日時点。指数：10月27日〜11月6日（米国は前夜分）。言及：11月2日のゴリコロ動画より。自動更新なし。
 </footer>
 
 <script>
@@ -308,7 +311,7 @@ var STOCKS={"dates":["2026-11-02","2026-10-30","2026-10-29","2026-10-28","2026-0
 var MENTIONS=[{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"個別解説","code":"8035","name":"東京エレクトロン","stars":null,"direction":"+","said":"決算好調（Q2営業利益+86.4%）・通期予想がコンセンサス超え・自社株買い1.1%で大幅高、寄与度トップ","basePrice":10005,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":9663,"changePct":-3.42,"verdict":"×"},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null},{"label":"2週間後","due":"2026-11-17","price":null,"changePct":null,"verdict":null},{"label":"3週間後","due":"2026-11-25","price":null,"changePct":null,"verdict":null},{"label":"1ヶ月後","due":"2026-12-02","price":null,"changePct":null,"verdict":null},{"label":"3ヶ月後","due":"2027-02-01","price":null,"changePct":null,"verdict":null},{"label":"6ヶ月後","due":"2027-04-30","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"個別解説","code":"6920","name":"レーザーテック","stars":null,"direction":"+","said":"Q1減益も計上タイミングの問題とされ、受注見通しを4,000〜5,000億円へ大幅引上げで大幅高","basePrice":40720,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":39130,"changePct":-3.9,"verdict":"×"},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null},{"label":"2週間後","due":"2026-11-17","price":null,"changePct":null,"verdict":null},{"label":"3週間後","due":"2026-11-25","price":null,"changePct":null,"verdict":null},{"label":"1ヶ月後","due":"2026-12-02","price":null,"changePct":null,"verdict":null},{"label":"3ヶ月後","due":"2027-02-01","price":null,"changePct":null,"verdict":null},{"label":"6ヶ月後","due":"2027-04-30","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"個別解説","code":"7735","name":"ＳＣＲＥＥＮホールディングス","stars":null,"direction":"-","said":"好決算（営業利益+17.4%）でも高い市場期待に届かず利益確定売りで急落","basePrice":9218,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":8949,"changePct":-2.92,"verdict":"○"},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null},{"label":"2週間後","due":"2026-11-17","price":null,"changePct":null,"verdict":null},{"label":"3週間後","due":"2026-11-25","price":null,"changePct":null,"verdict":null},{"label":"1ヶ月後","due":"2026-12-02","price":null,"changePct":null,"verdict":null},{"label":"3ヶ月後","due":"2027-02-01","price":null,"changePct":null,"verdict":null},{"label":"6ヶ月後","due":"2027-04-30","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"個別解説","code":"285A","name":"キオクシアホールディングス","stars":null,"direction":"-","said":"7-9月は大幅増益も10-12月ガイダンスが市場想定を下回り失望売りで急落","basePrice":11345,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":10735,"changePct":-5.38,"verdict":"○"},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null},{"label":"2週間後","due":"2026-11-17","price":null,"changePct":null,"verdict":null},{"label":"3週間後","due":"2026-11-25","price":null,"changePct":null,"verdict":null},{"label":"1ヶ月後","due":"2026-12-02","price":null,"changePct":null,"verdict":null},{"label":"3ヶ月後","due":"2027-02-01","price":null,"changePct":null,"verdict":null},{"label":"6ヶ月後","due":"2027-04-30","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"個別解説","code":"5333","name":"ＮＧＫ","stars":null,"direction":"+","said":"営業利益予想1,070→1,300億円の上方修正と配当106→126円の増配で大幅高","basePrice":5118,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":4997,"changePct":-2.36,"verdict":"×"},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null},{"label":"2週間後","due":"2026-11-17","price":null,"changePct":null,"verdict":null},{"label":"3週間後","due":"2026-11-25","price":null,"changePct":null,"verdict":null},{"label":"1ヶ月後","due":"2026-12-02","price":null,"changePct":null,"verdict":null},{"label":"3ヶ月後","due":"2027-02-01","price":null,"changePct":null,"verdict":null},{"label":"6ヶ月後","due":"2027-04-30","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"個別解説","code":"2501","name":"サッポロホールディングス","stars":null,"direction":"+","said":"アクティビスト3Dの19.44%保有と増配期待（DOE 5%方針）で上昇。将来利回りで逆算する好例と紹介","basePrice":2120.5,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":2128,"changePct":0.35,"verdict":"△"},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null},{"label":"2週間後","due":"2026-11-17","price":null,"changePct":null,"verdict":null},{"label":"3週間後","due":"2026-11-25","price":null,"changePct":null,"verdict":null},{"label":"1ヶ月後","due":"2026-12-02","price":null,"changePct":null,"verdict":null},{"label":"3ヶ月後","due":"2027-02-01","price":null,"changePct":null,"verdict":null},{"label":"6ヶ月後","due":"2027-04-30","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"ストップ高","code":"6629","name":"テクノホライゾン","stars":null,"direction":"+","said":"経常予想27.5→29.5億円へ上方修正。セキュリティ・データセンター受注とロボティクスのAI需要","basePrice":1047,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":1007,"changePct":-3.82,"verdict":"×"},{"label":"2営業日後","due":"2026-11-05","price":906,"changePct":-13.47,"verdict":"×"},{"label":"3営業日後","due":"2026-11-06","price":878,"changePct":-16.14,"verdict":"×"},{"label":"4営業日後","due":"2026-11-09","price":null,"changePct":null,"verdict":null},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"ストップ高","code":"6072","name":"地盤ネットホールディングス","stars":null,"direction":"+","said":"VALU投資事業を開始。助言会社と契約し新株予約権で最大207.5億円調達、有価証券投資へ","basePrice":1107,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":1224,"changePct":10.57,"verdict":"○"},{"label":"2営業日後","due":"2026-11-05","price":1135,"changePct":2.53,"verdict":"○"},{"label":"3営業日後","due":"2026-11-06","price":972,"changePct":-12.2,"verdict":"×"},{"label":"4営業日後","due":"2026-11-09","price":null,"changePct":null,"verdict":null},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"ストップ高","code":"6196","name":"ストライクグループ","stars":null,"direction":"+","said":"今期計画（売上+11%・最終利益+10.1%）、配当+15円の80円、自社株買い5.2%","basePrice":1713,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":1747,"changePct":1.98,"verdict":"○"},{"label":"2営業日後","due":"2026-11-05","price":1826,"changePct":6.6,"verdict":"○"},{"label":"3営業日後","due":"2026-11-06","price":1697,"changePct":-0.93,"verdict":"△"},{"label":"4営業日後","due":"2026-11-09","price":null,"changePct":null,"verdict":null},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"ストップ高","code":"7537","name":"丸文","stars":null,"direction":"+","said":"売上・営業利益の上方修正（営業利益78→98億円）と配当77→100円の増配","basePrice":2180,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":2087,"changePct":-4.27,"verdict":"×"},{"label":"2営業日後","due":"2026-11-05","price":2051,"changePct":-5.92,"verdict":"×"},{"label":"3営業日後","due":"2026-11-06","price":1950,"changePct":-10.55,"verdict":"×"},{"label":"4営業日後","due":"2026-11-09","price":null,"changePct":null,"verdict":null},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"ストップ安","code":"3835","name":"ｅＢＡＳＥ","stars":null,"direction":"-","said":"営業利益予想15.4→13.4億円へ下方修正し一転減益見通し。新規顧客の回復遅れ","basePrice":368,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":357,"changePct":-2.99,"verdict":"○"},{"label":"2営業日後","due":"2026-11-05","price":348,"changePct":-5.43,"verdict":"○"},{"label":"3営業日後","due":"2026-11-06","price":324,"changePct":-11.96,"verdict":"○"},{"label":"4営業日後","due":"2026-11-09","price":null,"changePct":null,"verdict":null},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"ストップ安","code":"9270","name":"バリュエンスホールディングス","stars":null,"direction":"-","said":"公募増資・売出しで発行済株式+7.9%の希薄化懸念","basePrice":1267,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":1246,"changePct":-1.66,"verdict":"○"},{"label":"2営業日後","due":"2026-11-05","price":1182,"changePct":-6.71,"verdict":"○"},{"label":"3営業日後","due":"2026-11-06","price":1111,"changePct":-12.31,"verdict":"○"},{"label":"4営業日後","due":"2026-11-09","price":null,"changePct":null,"verdict":null},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"ストップ安","code":"2489","name":"アドウェイズ","stars":null,"direction":"-","said":"14:30発表で最終利益15→9億円へ下方修正、期末配当減額、減損7.59億円計上見通し","basePrice":310,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":317,"changePct":2.26,"verdict":"×"},{"label":"2営業日後","due":"2026-11-05","price":338,"changePct":9.03,"verdict":"×"},{"label":"3営業日後","due":"2026-11-06","price":309,"changePct":-0.32,"verdict":"△"},{"label":"4営業日後","due":"2026-11-09","price":null,"changePct":null,"verdict":null},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"ニュース","code":"9504","name":"中国電力","stars":null,"direction":"+","said":"上期赤字・通期下方修正の悪材料でも、年間配当30→40円の引き上げが好感され大幅高","basePrice":1126,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":1085.5,"changePct":-3.6,"verdict":"×"},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null},{"label":"2週間後","due":"2026-11-17","price":null,"changePct":null,"verdict":null},{"label":"3週間後","due":"2026-11-25","price":null,"changePct":null,"verdict":null},{"label":"1ヶ月後","due":"2026-12-02","price":null,"changePct":null,"verdict":null},{"label":"3ヶ月後","due":"2027-02-01","price":null,"changePct":null,"verdict":null},{"label":"6ヶ月後","due":"2027-04-30","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"ニュース","code":"2121","name":"ＭＩＸＩ","stars":null,"direction":"+","said":"上期売上+42.4%・最終利益2倍の好決算。モンスト好調とスポーツ事業の増収増益","basePrice":4000,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":3945,"changePct":-1.38,"verdict":"×"},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null},{"label":"2週間後","due":"2026-11-17","price":null,"changePct":null,"verdict":null},{"label":"3週間後","due":"2026-11-25","price":null,"changePct":null,"verdict":null},{"label":"1ヶ月後","due":"2026-12-02","price":null,"changePct":null,"verdict":null},{"label":"3ヶ月後","due":"2027-02-01","price":null,"changePct":null,"verdict":null},{"label":"6ヶ月後","due":"2027-04-30","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"ニュース","code":"3788","name":"ＧＭＯグローバルサイン・ホールディングス","stars":null,"direction":"-","said":"GMOトラスト・ログインの顧客情報漏洩（約2,492社・約4万530人分、約9年間外部から取得可能な状態）が嫌気され大幅安","basePrice":2071,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":1970,"changePct":-4.88,"verdict":"○"},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null},{"label":"2週間後","due":"2026-11-17","price":null,"changePct":null,"verdict":null},{"label":"3週間後","due":"2026-11-25","price":null,"changePct":null,"verdict":null},{"label":"1ヶ月後","due":"2026-12-02","price":null,"changePct":null,"verdict":null},{"label":"3ヶ月後","due":"2027-02-01","price":null,"changePct":null,"verdict":null},{"label":"6ヶ月後","due":"2027-04-30","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"ニュース","code":"4506","name":"住友ファーマ","stars":null,"direction":"+","said":"営業利益予想900→1,040億円へ増額、ジェムテサ販売進展、配当15円で4期ぶり復配","basePrice":1972.5,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":1933.5,"changePct":-1.98,"verdict":"×"},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null},{"label":"2週間後","due":"2026-11-17","price":null,"changePct":null,"verdict":null},{"label":"3週間後","due":"2026-11-25","price":null,"changePct":null,"verdict":null},{"label":"1ヶ月後","due":"2026-12-02","price":null,"changePct":null,"verdict":null},{"label":"3ヶ月後","due":"2027-02-01","price":null,"changePct":null,"verdict":null},{"label":"6ヶ月後","due":"2027-04-30","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"ニュース","code":null,"name":"バイナンス（暗号資産・銘柄なし）","stars":null,"direction":"注意","said":"サイバー攻撃で約1兆円流出、FBIは北朝鮮の犯行と認定、損失は全額補償方針。本人は証券口座のセキュリティの重要性を強調","basePrice":null,"checkpoints":[],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"ニュース","code":null,"name":"BYD（中国EV・銘柄なし）","stars":null,"direction":"注意","said":"10月販売は前年比+11%の約49万台、海外出荷+102.8%で中国国内の低迷をカバー","basePrice":null,"checkpoints":[],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"引け後の好材料","code":"7480","name":"スズデン","stars":2,"direction":"+","said":"経常18%上方修正・4期ぶり最高益、配当+26円増額。売上645→700億円、営業利益39.6→47.8億円、利回り約6%","basePrice":3360,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":3735,"changePct":11.16,"verdict":"○"},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null},{"label":"2週間後","due":"2026-11-17","price":null,"changePct":null,"verdict":null},{"label":"3週間後","due":"2026-11-25","price":null,"changePct":null,"verdict":null},{"label":"1ヶ月後","due":"2026-12-02","price":null,"changePct":null,"verdict":null},{"label":"3ヶ月後","due":"2027-02-01","price":null,"changePct":null,"verdict":null},{"label":"6ヶ月後","due":"2027-04-30","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"引け後の好材料","code":"9104","name":"商船三井","stars":1,"direction":"+","said":"経常2,250→2,950億円へ31%上方修正。ただし日本郵船が上方修正済みで織り込みの可能性に慎重な見方も併記","basePrice":7579,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":7640,"changePct":0.8,"verdict":"△"},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null},{"label":"2週間後","due":"2026-11-17","price":null,"changePct":null,"verdict":null},{"label":"3週間後","due":"2026-11-25","price":null,"changePct":null,"verdict":null},{"label":"1ヶ月後","due":"2026-12-02","price":null,"changePct":null,"verdict":null},{"label":"3ヶ月後","due":"2027-02-01","price":null,"changePct":null,"verdict":null},{"label":"6ヶ月後","due":"2027-04-30","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"引け後の好材料","code":"5955","name":"ワイズホールディングス","stars":2,"direction":"+","said":"経常を一転33%増益に上方修正・5期ぶり最高益へ、自社株買い0.56%。77円の超低位株で短期値幅狙い・玄人向きと明言","basePrice":77,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":83,"changePct":7.79,"verdict":"○"},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null},{"label":"2週間後","due":"2026-11-17","price":null,"changePct":null,"verdict":null},{"label":"3週間後","due":"2026-11-25","price":null,"changePct":null,"verdict":null},{"label":"1ヶ月後","due":"2026-12-02","price":null,"changePct":null,"verdict":null},{"label":"3ヶ月後","due":"2027-02-01","price":null,"changePct":null,"verdict":null},{"label":"6ヶ月後","due":"2027-04-30","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false},{"mentionDate":"2026-11-02","video":"ゴリコロ 2026-11-02","videoId":"TtQmtdYCn5c","section":"引け後の好材料","code":"6232","name":"ＡＣＳＬ","stars":2,"direction":"+","said":"防衛分野の入札で小型無人機の大型案件（約5億円）を受注","basePrice":1038,"checkpoints":[{"label":"翌日","due":"2026-11-04","price":1060,"changePct":2.12,"verdict":"○"},{"label":"1週間後","due":"2026-11-10","price":null,"changePct":null,"verdict":null},{"label":"2週間後","due":"2026-11-17","price":null,"changePct":null,"verdict":null},{"label":"3週間後","due":"2026-11-25","price":null,"changePct":null,"verdict":null},{"label":"1ヶ月後","due":"2026-12-02","price":null,"changePct":null,"verdict":null},{"label":"3ヶ月後","due":"2027-02-01","price":null,"changePct":null,"verdict":null},{"label":"6ヶ月後","due":"2027-04-30","price":null,"changePct":null,"verdict":null}],"channel":"gorikoro","agreedByBothChannels":false}];
 var MARKETS={"ny":[{"date":"2026-10-30","dow":{"close":51770,"change":-572,"changePct":-1.09},"nasdaq":{"close":25437,"change":-747,"changePct":-2.86},"sp500":null,"factor":"Intel・Amazon決算が市場予想に届かずハイテク中心に売り。AI巨大投資への警戒と原油安も売り材料。","impactOnJapan":"日経先物は下落。ハイテク・半導体に逆風で東京は売り先行の見込み（動画の見立て）。","followUp":null,"followUpDue":"2026-11-16"}],"tokyo":[{"date":"2026-11-02","nikkei":{"close":63081,"change":-208,"changePct":-0.33},"topix":{"close":3930,"change":-34,"changePct":-0.86},"factor":"米株安で朝方-577円まで下落後、KOSPI高で一時+300円超まで戻すも戻り売り。中間選挙・地政学で様子見。","outlook":"200日線が下値の目安。下抜けると底なしの様相になる大事な場面。中間選挙の結果に注意。","followUp":null,"followUpDue":"2026-11-17"}]};
 var VIDEO={"channel":"@gorikoro","videoId":"TtQmtdYCn5c","title":"一発逆転狙う個人投資家に朗報！たった77円の超低位株に強力な材料が降臨！噴火したら、エグイ値幅が出る可能性があります！","url":"https://www.youtube.com/watch?v=TtQmtdYCn5c","published":"2026-11-02","targetDate":"2026-11-04","summarySection":{"afterCloseMaterials":"27:25-33:10","watchListTable":"35:02-","ignored":["0:00-27:25 相場振り返り等","33:10-35:02 本人の資産推移・メンバーシップ宣伝"]},"starLegend":{"★":"株価上昇期待","★★":"株価大幅上昇期待","★★★":"ストップ高濃厚"},"picks":[{"code":"7480","name":"スズデン","stars":2,"priceAtVideo":3360,"reason":"今期経常を18%上方修正・4期ぶり最高益、配当も26円増額。売上高645→700億円、営業利益39.6→47.8億円に引き上げ、配当利回りは約6%（動画内試算）。半導体・データセンター関連投資の拡大が背景。"},{"code":"9104","name":"商船三井","stars":1,"priceAtVideo":7579,"reason":"今期経常を31%上方修正（2,250→2,950億円）。ドライバルク・エネルギー好調、コンテナ船ONEも想定超え。ただし日本郵船が先週上方修正済みで織り込みの可能性には慎重に、と本人談。"},{"code":"5955","name":"ワイズホールディングス（ワイズ）","stars":2,"priceAtVideo":77,"reason":"今期経常を一転33%増益に上方修正・5期ぶり最高益更新へ、自社株買い0.56%。株価77円の超低位株で値幅狙いの短期向き。本人は玄人向き・ザラ場を見れる人向けとし、自分はトレードしないと明言。"},{"code":"6232","name":"ACSL","stars":2,"priceAtVideo":1038,"reason":"防衛分野の入札で小型無人機の大型案件（約5億円）を受注。シンプルに好材料と取られる可能性。"}],"fullSummary":{"nyReview":"金曜夜のNYは続落。ダウ-572の51,770、NASDAQ-2.86%の25,437。Intel・Amazon決算が予想に届かずハイテク中心に売り。AnthropicのIPO直後に信用格付けで警告との報道でAI巨大投資への警戒、原油安も売り材料。不動産・エネルギーは上昇、半導体・製造装置が下落。","tokyoReview":"11/2日経平均は-208円の63,081円、TOPIXは-34の3,930で続落。朝方-577円まで下げた後、KOSPI高を支えに一時+300円超まで戻すも戻り売り。米中間選挙と選挙後のイラン攻撃報道への様子見。業種はガラス・土石+3%・食料品+1%超が上昇、倉庫・運輸-5%超、サービス・精密-3%超、金属・銀行-2%超が下落。騰落レシオ87.3%。","tokyoStocks":["8035 東京エレクトロン +5.16%：Q2営業利益2,954億円（+86.4%）、通期予想1兆1,690億円（+87.1%）はコンセンサス約1兆円超え、自社株買い1.1%も発表し寄与度トップ","6920 レーザーテック +8%：Q1営業利益158億円（-41%）で予想を約100億円下振れも計上タイミングの問題とされ、受注見通しを3,000〜4,000億円→4,000〜5,000億円へ大幅引き上げ（EUVマスク検査装置）","7735 SCREEN -18%：上期売上3,084億円（+12.5%）・営業利益545億円（+17.4%）と好決算も高い市場期待に届かず利益確定売り","285A キオクシア -15%：7-9月営業利益は前年比23.2倍で市場を小幅上回るも、10-12月ガイダンス約2兆円が市場想定約2.3兆円を下回り失望売り（動画内数値）","5333 NGK +10.95%：営業利益予想1,070→1,300億円（+37%）、配当106→126円。自動車向け好調とAIインフラ向け半導体装置部品需要","2501 サッポロHD +7.7%：アクティビスト3Dインベストメントが19.44%保有、関連記事への反応で買い。DOEを2030年度5%へ引き上げる方針（25年実績3.2%）、20年以上減配なし、今期配当40円で利回り1.9%。不動産事業のKKR等への売却益も背景。本人の教訓：将来の増配が明示された高配当株は将来利回りで逆算して仕込むのが勝ちやすいパターン"],"limitUpDown":["ストップ高 6629 テクノホライゾン +16%：経常予想27.5→29.5億円（+7.3%）へ上方修正、セキュリティ・データセンター受注とロボティクスのAI需要","ストップ高 6072 地盤ネットHD +15%：VALU投資事業を開始、著名個人投資家ら設立の投資助言会社と契約、新株予約権で最大207.5億円調達し有価証券投資へ。2030/3に投資残高4,200億円・年間インカム収益120億円目標","ストップ高 6196 ストライク +21%：今期売上300.5億円（+11%）・最終利益78.63億円（+10.1%）計画、配当+15円の80円、自社株買い5.2%","ストップ高 7537 丸文 +22%：売上2,250→2,360億円、営業利益78→98億円、配当77→100円へ上方修正。モビリティ向け半導体需要と産業機器分野（※字幕のコード認識が不安定だったため台帳の値動き+22.5%で同定）","ストップ安 3835 eBASE -17%：営業利益予想15.4→13.4億円へ下方修正し一転減益見通し、新規顧客の回復遅れ","ストップ安 9270 バリュエンスHD -24%：公募増資110万株＋売出し105万株等で発行済株式+7.9%の希薄化懸念","2489 アドウェイズ（14:30発表）：最終利益予想15→9億円へ下方修正（前期比では3.6倍）、期末配当も減額、減損7.59億円計上見通しが要因"],"news":["バイナンスがサイバー攻撃を受け約1兆円流出、FBIは北朝鮮のTraderTraitorによる犯行と認定、損失は基金と自社資金で全額補償方針。本人は証券口座のセキュリティ（2段階認証・パスキー）の重要性を強調","BYDの10月販売は前年比+11%の約49万台、海外出荷が+102.8%と急増し中国国内の低迷をカバー","9504 中国電力 +13%：上期は49.8億円の赤字で通期を400→380億円へ下方修正と悪材料ながら、年間配当30→40円の引き上げが好感され大幅高","2121 MIXI +5%：上期売上960億円（+42.4%）・最終利益98.78億円（2倍）、モンスト好調とスポーツ事業の増収増益","3788 GMOグローバルサインHD -13%：GMOトラスト・ログインの顧客情報漏洩の調査結果を発表、約2,492社・約4万530人分（暫定値から拡大）、設定不備で2017年11月以降約9年間外部から取得可能な状態だった","4506 住友ファーマ +4.67%：営業利益予想900→1,040億円へ増額、米で過活動膀胱治療薬ジェムテサの販売進展、年間配当15円で4期ぶり復配"],"promoSegment":"33:10-35:02は本人の実績とメンバーシップ宣伝：直近2年で資産を倍増し1億円達成、監視銘柄約380社・保有約40社の高配当ポートフォリオ、年間配当金は税引前240万円（月約20万円、利回り3%台後半）。VIPメンバー限定コンテンツ（新規監視銘柄、配当実績、ゴリコロ式高配当株投資術）の案内。","closing":"11/3は祝日で休場。米中間選挙（日本時間11/4朝から開票）が最大の関心事で、民主党が上下両院を取るとハイテクに逆風、選挙後のイランへの大規模攻撃など地政学リスクにも注意。日経・TOPIXは200日線が目安で、下抜けると底なし沼の様相、年末に向け大事な場面との見方。"}};
-var MARKET_DAYS={"days":[{"date":"2026-11-06","tokyo":{"nikkei":{"prev":61077.9,"close":57434.77,"change":-3643.13,"pct":-5.96}},"nyPrev":{"date":"2026-11-05","dow":{"prev":53356.12,"close":51523.06,"change":-1833.06,"pct":-3.44},"nasdaq":{"prev":25736.51,"close":24315.0,"change":-1421.51,"pct":-5.52}},"record":null,"nyRecord":null,"sectors":null},{"date":"2026-11-05","tokyo":{"nikkei":{"prev":62188.63,"close":61077.9,"change":-1110.73,"pct":-1.79}},"nyPrev":{"date":"2026-11-04","dow":{"prev":51786.72,"close":53356.12,"change":1569.4,"pct":3.03},"nasdaq":{"prev":25372.01,"close":25736.51,"change":364.5,"pct":1.44}},"record":null,"nyRecord":null,"sectors":null},{"date":"2026-11-04","tokyo":{"nikkei":{"prev":63081.86,"close":62188.63,"change":-893.23,"pct":-1.42}},"nyPrev":{"date":"2026-11-03","dow":{"prev":51983.98,"close":51786.72,"change":-197.26,"pct":-0.38},"nasdaq":{"prev":25164.31,"close":25372.01,"change":207.7,"pct":0.83}},"record":null,"nyRecord":null,"sectors":null},{"date":"2026-11-02","tokyo":{"nikkei":{"prev":63290.11,"close":63081.86,"change":-208.25,"pct":-0.33},"topix":{"close":3930,"change":-34,"pct":-0.86}},"nyPrev":{"date":"2026-10-30","dow":{"prev":52342.56,"close":51770.31,"change":-572.25,"pct":-1.09},"nasdaq":{"prev":26184.72,"close":25437.0,"change":-747.72,"pct":-2.86}},"record":{"factor":"米株安で朝方-577円まで下落後、KOSPI高で一時+300円超まで戻すも戻り売り。中間選挙・地政学で様子見。","outlook":"200日線が下値の目安。下抜けると底なしの様相になる大事な場面。中間選挙の結果に注意。","followUpDue":"2026-11-17"},"nyRecord":{"factor":"Intel・Amazon決算が市場予想に届かずハイテク中心に売り。AI巨大投資への警戒と原油安も売り材料。","impactOnJapan":"日経先物は下落。ハイテク・半導体に逆風で東京は売り先行の見込み（動画の見立て）。","followUpDue":"2026-11-16"},"sectors":[{"name":"空運業","pct":0.46,"n":6},{"name":"食料品","pct":0.28,"n":122},{"name":"電気・ガス業","pct":0.16,"n":27},{"name":"陸運業","pct":0.08,"n":54},{"name":"ガラス・土石製品","pct":-0.17,"n":48},{"name":"水産・農林業","pct":-0.19,"n":12},{"name":"不動産業","pct":-0.26,"n":127},{"name":"小売業","pct":-0.28,"n":321},{"name":"パルプ・紙","pct":-0.29,"n":22},{"name":"機械","pct":-0.31,"n":202},{"name":"化学","pct":-0.34,"n":199},{"name":"建設業","pct":-0.37,"n":136},{"name":"繊維製品","pct":-0.45,"n":47},{"name":"保険業","pct":-0.5,"n":14},{"name":"ゴム製品","pct":-0.54,"n":15},{"name":"証券、商品先物取引業","pct":-0.56,"n":37},{"name":"鉄鋼","pct":-0.57,"n":35},{"name":"輸送用機器","pct":-0.64,"n":79},{"name":"金属製品","pct":-0.68,"n":79},{"name":"鉱業","pct":-0.69,"n":5},{"name":"サービス業","pct":-0.9,"n":518},{"name":"卸売業","pct":-0.96,"n":270},{"name":"その他製品","pct":-0.98,"n":100},{"name":"医薬品","pct":-0.99,"n":80},{"name":"電気機器","pct":-1.03,"n":222},{"name":"石油・石炭製品","pct":-1.04,"n":9},{"name":"非鉄金属","pct":-1.22,"n":32},{"name":"情報・通信業","pct":-1.35,"n":591},{"name":"精密機器","pct":-1.36,"n":51},{"name":"その他","pct":-1.41,"n":36},{"name":"倉庫・運輸関連業","pct":-1.6,"n":31},{"name":"海運業","pct":-1.66,"n":11},{"name":"その他金融業","pct":-1.75,"n":37},{"name":"銀行業","pct":-3.6,"n":79}]},{"date":"2026-10-30","tokyo":{"nikkei":{"prev":64659.47,"close":63290.11,"change":-1369.36,"pct":-2.12}},"nyPrev":{"date":"2026-10-29","dow":{"prev":52475.1,"close":52342.56,"change":-132.54,"pct":-0.25},"nasdaq":{"prev":26549.85,"close":26184.72,"change":-365.13,"pct":-1.38}},"record":null,"nyRecord":null,"sectors":[{"name":"空運業","pct":2.52,"n":6},{"name":"海運業","pct":1.51,"n":11},{"name":"陸運業","pct":1.43,"n":53},{"name":"食料品","pct":1.1,"n":121},{"name":"保険業","pct":0.99,"n":14},{"name":"水産・農林業","pct":0.88,"n":12},{"name":"小売業","pct":0.75,"n":319},{"name":"その他金融業","pct":0.58,"n":38},{"name":"その他製品","pct":0.23,"n":101},{"name":"パルプ・紙","pct":0.18,"n":22},{"name":"電気・ガス業","pct":0.18,"n":27},{"name":"不動産業","pct":0.08,"n":126},{"name":"倉庫・運輸関連業","pct":-0.03,"n":29},{"name":"ゴム製品","pct":-0.05,"n":15},{"name":"サービス業","pct":-0.08,"n":517},{"name":"繊維製品","pct":-0.24,"n":47},{"name":"医薬品","pct":-0.39,"n":80},{"name":"金属製品","pct":-0.49,"n":77},{"name":"石油・石炭製品","pct":-0.57,"n":9},{"name":"卸売業","pct":-0.58,"n":270},{"name":"鉄鋼","pct":-0.74,"n":35},{"name":"輸送用機器","pct":-0.74,"n":79},{"name":"銀行業","pct":-0.76,"n":79},{"name":"ガラス・土石製品","pct":-0.8,"n":48},{"name":"化学","pct":-0.82,"n":198},{"name":"情報・通信業","pct":-0.9,"n":587},{"name":"鉱業","pct":-1.15,"n":5},{"name":"証券、商品先物取引業","pct":-1.3,"n":37},{"name":"機械","pct":-1.46,"n":200},{"name":"建設業","pct":-1.47,"n":134},{"name":"その他","pct":-2.2,"n":34},{"name":"精密機器","pct":-2.21,"n":51},{"name":"非鉄金属","pct":-2.47,"n":32},{"name":"電気機器","pct":-2.79,"n":222}]},{"date":"2026-10-29","tokyo":{"nikkei":{"prev":63954.19,"close":64659.47,"change":705.28,"pct":1.1}},"nyPrev":{"date":"2026-10-28","dow":{"prev":52377.57,"close":52475.1,"change":97.53,"pct":0.19},"nasdaq":{"prev":26477.81,"close":26549.85,"change":72.04,"pct":0.27}},"record":null,"nyRecord":null,"sectors":[{"name":"銀行業","pct":2.15,"n":79},{"name":"ガラス・土石製品","pct":0.7,"n":48},{"name":"保険業","pct":0.67,"n":14},{"name":"電気・ガス業","pct":0.59,"n":27},{"name":"非鉄金属","pct":0.58,"n":32},{"name":"食料品","pct":0.46,"n":122},{"name":"パルプ・紙","pct":0.45,"n":22},{"name":"空運業","pct":0.45,"n":6},{"name":"海運業","pct":0.42,"n":11},{"name":"その他金融業","pct":0.28,"n":38},{"name":"建設業","pct":0.21,"n":134},{"name":"小売業","pct":0.1,"n":319},{"name":"倉庫・運輸関連業","pct":0.08,"n":28},{"name":"ゴム製品","pct":0.04,"n":15},{"name":"証券、商品先物取引業","pct":0.02,"n":37},{"name":"鉱業","pct":0.02,"n":5},{"name":"繊維製品","pct":0.01,"n":48},{"name":"化学","pct":-0.04,"n":198},{"name":"水産・農林業","pct":-0.15,"n":12},{"name":"陸運業","pct":-0.16,"n":51},{"name":"石油・石炭製品","pct":-0.17,"n":9},{"name":"不動産業","pct":-0.21,"n":126},{"name":"サービス業","pct":-0.23,"n":519},{"name":"卸売業","pct":-0.24,"n":270},{"name":"その他製品","pct":-0.34,"n":101},{"name":"輸送用機器","pct":-0.41,"n":79},{"name":"金属製品","pct":-0.41,"n":79},{"name":"その他","pct":-0.43,"n":34},{"name":"機械","pct":-0.68,"n":199},{"name":"精密機器","pct":-0.75,"n":51},{"name":"鉄鋼","pct":-0.8,"n":35},{"name":"電気機器","pct":-0.89,"n":222},{"name":"情報・通信業","pct":-1.08,"n":585},{"name":"医薬品","pct":-1.16,"n":80}]},{"date":"2026-10-28","tokyo":{"nikkei":{"prev":63268.37,"close":63954.19,"change":685.82,"pct":1.08}},"nyPrev":{"date":"2026-10-27","dow":{"prev":52361.58,"close":52377.57,"change":15.99,"pct":0.03},"nasdaq":{"prev":26169.38,"close":26477.81,"change":308.43,"pct":1.18}},"record":null,"nyRecord":null,"sectors":null},{"date":"2026-10-27","tokyo":{"nikkei":{"prev":62189.65,"close":63268.37,"change":1078.72,"pct":1.73}},"nyPrev":null,"record":null,"nyRecord":null,"sectors":null}],"sectorNote":"33業種の騰落率は構成銘柄の終値の単純平均（当アプリ計算）。公式の業種別指数とは計算方法が異なる。"};
+var MARKET_DAYS={"days":[{"date":"2026-11-06","tokyo":{"nikkei":{"prev":61077.9,"close":57434.77,"change":-3643.13,"pct":-5.96}},"nyPrev":{"date":"2026-11-05","dow":{"prev":53356.12,"close":51523.06,"change":-1833.06,"pct":-3.44},"nasdaq":{"prev":25736.51,"close":24315.0,"change":-1421.51,"pct":-5.52}},"record":null,"nyRecord":null,"sectors":null},{"date":"2026-11-05","tokyo":{"nikkei":{"prev":62188.63,"close":61077.9,"change":-1110.73,"pct":-1.79}},"nyPrev":{"date":"2026-11-04","dow":{"prev":51786.72,"close":53356.12,"change":1569.4,"pct":3.03},"nasdaq":{"prev":25372.01,"close":25736.51,"change":364.5,"pct":1.44}},"record":null,"nyRecord":null,"sectors":null},{"date":"2026-11-04","tokyo":{"nikkei":{"prev":63081.86,"close":62188.63,"change":-893.23,"pct":-1.42}},"nyPrev":{"date":"2026-11-03","dow":{"prev":51983.98,"close":51786.72,"change":-197.26,"pct":-0.38},"nasdaq":{"prev":25164.31,"close":25372.01,"change":207.7,"pct":0.83}},"record":null,"nyRecord":null,"sectors":null},{"date":"2026-11-02","tokyo":{"nikkei":{"prev":63290.11,"close":63081.86,"change":-208.25,"pct":-0.33},"topix":{"close":3930,"change":-34,"pct":-0.86}},"nyPrev":{"date":"2026-10-30","dow":{"prev":52342.56,"close":51770.31,"change":-572.25,"pct":-1.09},"nasdaq":{"prev":26184.72,"close":25437.0,"change":-747.72,"pct":-2.86}},"record":{"factor":"米株安で朝方-577円まで下落後、KOSPI高で一時+300円超まで戻すも戻り売り。中間選挙・地政学で様子見。","outlook":"200日線が下値の目安。下抜けると底なしの様相になる大事な場面。中間選挙の結果に注意。","followUpDue":"2026-11-17"},"nyRecord":{"factor":"Intel・Amazon決算が市場予想に届かずハイテク中心に売り。AI巨大投資への警戒と原油安も売り材料。","impactOnJapan":"日経先物は下落。ハイテク・半導体に逆風で東京は売り先行の見込み（動画の見立て）。","followUpDue":"2026-11-16"},"sectors":[{"name":"空運業","pct":0.46,"n":6},{"name":"食料品","pct":0.28,"n":122},{"name":"電気・ガス業","pct":0.16,"n":27},{"name":"陸運業","pct":0.08,"n":54},{"name":"ガラス・土石製品","pct":-0.17,"n":48},{"name":"水産・農林業","pct":-0.19,"n":12},{"name":"不動産業","pct":-0.26,"n":127},{"name":"小売業","pct":-0.28,"n":321},{"name":"パルプ・紙","pct":-0.29,"n":22},{"name":"機械","pct":-0.31,"n":202},{"name":"化学","pct":-0.34,"n":199},{"name":"建設業","pct":-0.37,"n":136},{"name":"繊維製品","pct":-0.45,"n":47},{"name":"保険業","pct":-0.5,"n":14},{"name":"ゴム製品","pct":-0.54,"n":15},{"name":"証券、商品先物取引業","pct":-0.56,"n":37},{"name":"鉄鋼","pct":-0.57,"n":35},{"name":"輸送用機器","pct":-0.64,"n":79},{"name":"金属製品","pct":-0.68,"n":79},{"name":"鉱業","pct":-0.69,"n":5},{"name":"サービス業","pct":-0.9,"n":518},{"name":"卸売業","pct":-0.96,"n":270},{"name":"その他製品","pct":-0.98,"n":100},{"name":"医薬品","pct":-0.99,"n":80},{"name":"電気機器","pct":-1.03,"n":222},{"name":"石油・石炭製品","pct":-1.04,"n":9},{"name":"非鉄金属","pct":-1.22,"n":32},{"name":"情報・通信業","pct":-1.35,"n":591},{"name":"精密機器","pct":-1.36,"n":51},{"name":"その他","pct":-1.41,"n":36},{"name":"倉庫・運輸関連業","pct":-1.6,"n":31},{"name":"海運業","pct":-1.66,"n":11},{"name":"その他金融業","pct":-1.75,"n":37},{"name":"銀行業","pct":-3.6,"n":79}]},{"date":"2026-10-30","tokyo":{"nikkei":{"prev":64659.47,"close":63290.11,"change":-1369.36,"pct":-2.12}},"nyPrev":{"date":"2026-10-29","dow":{"prev":52475.1,"close":52342.56,"change":-132.54,"pct":-0.25},"nasdaq":{"prev":26549.85,"close":26184.72,"change":-365.13,"pct":-1.38}},"record":null,"nyRecord":null,"sectors":[{"name":"空運業","pct":2.52,"n":6},{"name":"海運業","pct":1.51,"n":11},{"name":"陸運業","pct":1.43,"n":53},{"name":"食料品","pct":1.1,"n":121},{"name":"保険業","pct":0.99,"n":14},{"name":"水産・農林業","pct":0.88,"n":12},{"name":"小売業","pct":0.75,"n":319},{"name":"その他金融業","pct":0.58,"n":38},{"name":"その他製品","pct":0.23,"n":101},{"name":"パルプ・紙","pct":0.18,"n":22},{"name":"電気・ガス業","pct":0.18,"n":27},{"name":"不動産業","pct":0.08,"n":126},{"name":"倉庫・運輸関連業","pct":-0.03,"n":29},{"name":"ゴム製品","pct":-0.05,"n":15},{"name":"サービス業","pct":-0.08,"n":517},{"name":"繊維製品","pct":-0.24,"n":47},{"name":"医薬品","pct":-0.39,"n":80},{"name":"金属製品","pct":-0.49,"n":77},{"name":"石油・石炭製品","pct":-0.57,"n":9},{"name":"卸売業","pct":-0.58,"n":270},{"name":"鉄鋼","pct":-0.74,"n":35},{"name":"輸送用機器","pct":-0.74,"n":79},{"name":"銀行業","pct":-0.76,"n":79},{"name":"ガラス・土石製品","pct":-0.8,"n":48},{"name":"化学","pct":-0.82,"n":198},{"name":"情報・通信業","pct":-0.9,"n":587},{"name":"鉱業","pct":-1.15,"n":5},{"name":"証券、商品先物取引業","pct":-1.3,"n":37},{"name":"機械","pct":-1.46,"n":200},{"name":"建設業","pct":-1.47,"n":134},{"name":"その他","pct":-2.2,"n":34},{"name":"精密機器","pct":-2.21,"n":51},{"name":"非鉄金属","pct":-2.47,"n":32},{"name":"電気機器","pct":-2.79,"n":222}]},{"date":"2026-10-29","tokyo":{"nikkei":{"prev":63954.19,"close":64659.47,"change":705.28,"pct":1.1}},"nyPrev":{"date":"2026-10-28","dow":{"prev":52377.57,"close":52475.1,"change":97.53,"pct":0.19},"nasdaq":{"prev":26477.81,"close":26549.85,"change":72.04,"pct":0.27}},"record":null,"nyRecord":null,"sectors":[{"name":"銀行業","pct":2.15,"n":79},{"name":"ガラス・土石製品","pct":0.7,"n":48},{"name":"保険業","pct":0.67,"n":14},{"name":"電気・ガス業","pct":0.59,"n":27},{"name":"非鉄金属","pct":0.58,"n":32},{"name":"食料品","pct":0.46,"n":122},{"name":"パルプ・紙","pct":0.45,"n":22},{"name":"空運業","pct":0.45,"n":6},{"name":"海運業","pct":0.42,"n":11},{"name":"その他金融業","pct":0.28,"n":38},{"name":"建設業","pct":0.21,"n":134},{"name":"小売業","pct":0.1,"n":319},{"name":"倉庫・運輸関連業","pct":0.08,"n":28},{"name":"ゴム製品","pct":0.04,"n":15},{"name":"証券、商品先物取引業","pct":0.02,"n":37},{"name":"鉱業","pct":0.02,"n":5},{"name":"繊維製品","pct":0.01,"n":48},{"name":"化学","pct":-0.04,"n":198},{"name":"水産・農林業","pct":-0.15,"n":12},{"name":"陸運業","pct":-0.16,"n":51},{"name":"石油・石炭製品","pct":-0.17,"n":9},{"name":"不動産業","pct":-0.21,"n":126},{"name":"サービス業","pct":-0.23,"n":519},{"name":"卸売業","pct":-0.24,"n":270},{"name":"その他製品","pct":-0.34,"n":101},{"name":"輸送用機器","pct":-0.41,"n":79},{"name":"金属製品","pct":-0.41,"n":79},{"name":"その他","pct":-0.43,"n":34},{"name":"機械","pct":-0.68,"n":199},{"name":"精密機器","pct":-0.75,"n":51},{"name":"鉄鋼","pct":-0.8,"n":35},{"name":"電気機器","pct":-0.89,"n":222},{"name":"情報・通信業","pct":-1.08,"n":585},{"name":"医薬品","pct":-1.16,"n":80}]},{"date":"2026-10-28","tokyo":{"nikkei":{"prev":63268.37,"close":63954.19,"change":685.82,"pct":1.08}},"nyPrev":{"date":"2026-10-27","dow":{"prev":52361.58,"close":52377.57,"change":15.99,"pct":0.03},"nasdaq":{"prev":26169.38,"close":26477.81,"change":308.43,"pct":1.18}},"record":null,"nyRecord":null,"sectors":null},{"date":"2026-10-27","tokyo":{"nikkei":{"prev":62189.65,"close":63268.37,"change":1078.72,"pct":1.73}},"nyPrev":null,"record":null,"nyRecord":null,"sectors":null}],"sectorNote":"業種%は当アプリ計算（単純平均）"};
 </script>
 <script>
 /* ---------- helpers ---------- */
@@ -370,71 +373,12 @@ function switchTab(name){
 document.querySelectorAll('#tabbar .tab').forEach(function(t){
   t.addEventListener('click',function(){switchTab(t.dataset.tab)});
 });
+var infobtn=$('infobtn');
+infobtn.addEventListener('click',function(){
+  var open=$('info').classList.toggle('open');
+  infobtn.setAttribute('aria-expanded',open?'true':'false');
+});
 function goStock(code){if(window.openStockDetail)window.openStockDetail(code)}
-
-/* ---------- 今日の検証 ---------- */
-(function(){
-  var dueNext=[],dueLimit=[],doneCount=0,vc={'○':0,'×':0,'△':0},gmCount=0,gmVc={'○':0,'×':0,'△':0},dueByDate={};
-  MENTIONS.forEach(function(m){
-    m.checkpoints.forEach(function(c){
-      if(c.price!=null){doneCount++;if(vc[c.verdict]!=null)vc[c.verdict]++;if(m.section==='引け後の好材料'){gmCount++;if(gmVc[c.verdict]!=null)gmVc[c.verdict]++;}}
-      if(c.due<=TODAY){
-        dueByDate[c.due]=(dueByDate[c.due]||0)+1;
-        if(c.label==='翌日')dueNext.push({m:m,c:c});else dueLimit.push({m:m,c:c});
-      }
-    });
-  });
-  /* 統計はチェックポイントデータから自動集計 */
-  var dueDates=Object.keys(dueByDate).sort();
-  $('st-due').innerHTML=(dueNext.length+dueLimit.length)+'<small> 件</small>';
-  $('st-due-d').textContent=dueDates.map(function(d){return md(d)+'期限 '+dueByDate[d]+'件'}).join(' ＋ ');
-  $('st-done').innerHTML=doneCount+'<small> 件</small>';
-  $('st-done-d').textContent='○ '+vc['○']+'件 ・ × '+vc['×']+'件 ・ △ '+vc['△']+'件';
-  if(gmCount>0){
-    $('st-gm').innerHTML=Math.round(gmVc['○']/gmCount*100)+'<small>%</small>';
-    $('st-gm-d').textContent='翌日チェック '+gmCount+'件中 ○ '+gmVc['○']+'件・△ '+gmVc['△']+'件';
-  }
-  $('h-next-cnt').textContent=' '+dueNext.length+'件';
-  $('h-limit-cnt').textContent=' '+dueLimit.length+'件';
-  function verdictBadge(c){
-    if(c.price==null)return '<span class="badge b-wait">判定待ち</span>';
-    var cls=c.verdict==='○'?'b-ok':(c.verdict==='×'?'b-ng':'b-wait');
-    return '<span class="badge '+cls+'">'+esc(c.verdict||'判定済')+'</span>';
-  }
-  function line(o){
-    var m=o.m,c=o.c;
-    var detail='検証：'+esc(c.label)+'（期限 '+c.due+'）／基準価格 '+fmt(m.basePrice)+'円';
-    if(c.price!=null){
-      var pc=c.changePct;
-      detail+=' → 株価 '+fmt(c.price)+'円（基準比 <span class="'+(pc>0?'up':(pc<0?'down':''))+'" style="font-weight:700">'+pct(pc)+'</span>）';
-    }
-    return '<div class="rowline"><div class="main"><span class="badge b-sec">'+esc(m.section)+'</span> '
-      +(m.stars?starsHTML(m.stars)+' ':'')
-      +'<span class="code">'+esc(m.code||'')+'</span> <span class="sname">'+esc(m.name)+'</span> '+dirBadge(m.direction)
-      +'<div class="said">'+esc(m.said)+'</div>'
-      +'<div class="said num">'+detail+'</div></div>'
-      +verdictBadge(c)+'</div>';
-  }
-  $('due-next').innerHTML=dueNext.map(line).join('')||'<div class="empty">期限到来分はありません</div>';
-  $('due-limit').innerHTML=dueLimit.map(line).join('')||'<div class="empty">期限到来分はありません</div>';
-
-  var fut={};
-  MENTIONS.forEach(function(m){m.checkpoints.forEach(function(c){
-    if(c.due>TODAY){(fut[c.due]=fut[c.due]||[]).push(m.name+'（'+c.label+'）')}
-  })});
-  var keys=Object.keys(fut).sort().slice(0,6);
-  if(keys.length){
-    var nd=keys[0],byLabel={};
-    MENTIONS.forEach(function(m){m.checkpoints.forEach(function(c){if(c.due===nd)byLabel[c.label]=(byLabel[c.label]||0)+1})});
-    $('st-next').textContent=md(nd);
-    $('st-next-d').textContent=Object.keys(byLabel).map(function(l){return l+' '+byLabel[l]+'件'}).join(' ＋ ');
-  }
-  $('upcoming').innerHTML=keys.map(function(d){
-    var items=fut[d];
-    return '<div class="rowline"><div class="main"><span class="sname num">'+d+'</span> <span class="badge b-sec">'+items.length+'件</span>'
-      +'<div class="said">'+esc(items.slice(0,6).join('、'))+(items.length>6?' ほか'+(items.length-6)+'件':'')+'</div></div></div>';
-  }).join('');
-})();
 
 /* ---------- 市場 ---------- */
 (function(){
@@ -463,10 +407,10 @@ function goStock(code){if(window.openStockDetail)window.openStockDetail(code)}
         +idxRow('ダウ平均',day.nyPrev.dow,'')+idxRow('NASDAQ総合',day.nyPrev.nasdaq,'');
       if(day.nyRecord){
         nyHtml+='<p class="kv"><span class="k">要因</span>'+esc(day.nyRecord.factor)+'</p>'
-          +'<p class="kv"><span class="k">日本市場への影響（動画の見立て）</span>'+esc(day.nyRecord.impactOnJapan)+'</p>'
-          +'<p class="kv"><span class="k">経過確認</span>'+day.nyRecord.followUpDue+' に2週間後の経過を確認予定</p>';
+          +'<p class="kv"><span class="k">日本への影響</span>'+esc(day.nyRecord.impactOnJapan)+'</p>'
+          +'<p class="kv"><span class="k">経過確認</span>'+day.nyRecord.followUpDue+'（2週間後）</p>';
       }else{
-        nyHtml+='<p class="kv" style="color:var(--sub);font-size:12.5px">この日の市場記録はまだない</p>';
+        nyHtml+='<p class="kv" style="color:var(--sub);font-size:12.5px">記録なし</p>';
       }
       nyHtml+='</div>';
     }
@@ -476,9 +420,9 @@ function goStock(code){if(window.openStockDetail)window.openStockDetail(code)}
     if(day.record){
       tkHtml+='<p class="kv"><span class="k">要因</span>'+esc(day.record.factor)+'</p>'
         +'<p class="kv"><span class="k">見通し</span>'+esc(day.record.outlook)+'</p>'
-        +'<p class="kv"><span class="k">経過確認</span>'+day.record.followUpDue+' に2週間後の経過を確認予定</p>';
+        +'<p class="kv"><span class="k">経過確認</span>'+day.record.followUpDue+'（2週間後）</p>';
     }else{
-      tkHtml+='<p class="kv" style="color:var(--sub);font-size:12.5px">この日の市場記録はまだない</p>';
+      tkHtml+='<p class="kv" style="color:var(--sub);font-size:12.5px">記録なし</p>';
     }
     tkHtml+='</div>';
     $('mkt-tokyo').innerHTML=tkHtml;
@@ -496,7 +440,7 @@ function goStock(code){if(window.openStockDetail)window.openStockDetail(code)}
     $('mkt-mentions').innerHTML=ms.length?ms.map(function(m){
       var canGo=!!(m.code&&byCode[m.code]);
       return '<button class="mchip"'+(canGo?' data-code="'+esc(m.code)+'"':' disabled')+'><span class="code">'+esc(m.code||'―')+'</span> '+esc(m.name)+' <span class="badge b-sec">'+esc(m.section)+'</span>'+(m.stars?' '+starsHTML(m.stars):'')+'</button>';
-    }).join(''):'<div class="empty">この日の言及記録はありません</div>';
+    }).join(''):'<div class="empty">記録なし</div>';
     document.querySelectorAll('#mkt-mentions .mchip[data-code]').forEach(function(b){
       b.addEventListener('click',function(){goStock(b.dataset.code)});
     });
@@ -530,28 +474,60 @@ function goStock(code){if(window.openStockDetail)window.openStockDetail(code)}
       el.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();goStock(el.dataset.code)}});
     });
   }
-  var up=MENTIONS.filter(function(m){return m.section==='ストップ高'});
-  var dn=MENTIONS.filter(function(m){return m.section==='ストップ安'});
-  $('limits-list').innerHTML='<h2 class="sec"><span class="up">▲ ストップ高</span> <span style="color:var(--sub);font-size:13px">'+up.length+'件 ・ 11月2日</span></h2>'
-    +up.map(caseCard).join('')
-    +'<h2 class="sec"><span class="down">▼ ストップ安</span> <span style="color:var(--sub);font-size:13px">'+dn.length+'件 ・ 11月2日</span></h2>'
-    +dn.map(caseCard).join('');
-  bindCards($('limits-list'));
-  var goods=MENTIONS.filter(function(m){return m.section==='引け後の好材料'}).slice().sort(function(a,b){return (b.stars||0)-(a.stars||0)});
-  $('goods-list').innerHTML=goods.length?goods.map(caseCard).join(''):'<div class="empty">該当する銘柄はありません</div>';
-  bindCards($('goods-list'));
-  function renderStocks(f){
-    var list=MENTIONS.filter(function(m){return m.section===f});
-    $('stocks-list').innerHTML=list.length?list.map(caseCard).join(''):'<div class="empty">該当する銘柄はありません</div>';
+  /* 日付ページャー（市場タブと同じ操作感：データのある日付だけをめくる） */
+  var WD=['日','月','火','水','木','金','土'];
+  function dlabel(d){var p=d.split('-');return (+p[0])+'年'+(+p[1])+'月'+(+p[2])+'日（'+WD[new Date(+p[0],+p[1]-1,+p[2]).getDay()]+'）'}
+  function datesOf(list){var seen={},out=[];list.forEach(function(m){if(!seen[m.mentionDate]){seen[m.mentionDate]=1;out.push(m.mentionDate)}});out.sort();out.reverse();return out}
+  function makePager(prevId,dateId,nextId,dates,onChange){
+    var idx=0;
+    function render(){
+      $(dateId).textContent=dlabel(dates[idx]);
+      $(prevId).disabled=(idx>=dates.length-1);
+      $(nextId).disabled=(idx<=0);
+      onChange(dates[idx]);
+    }
+    $(prevId).addEventListener('click',function(){if(idx<dates.length-1){idx++;render()}});
+    $(nextId).addEventListener('click',function(){if(idx>0){idx--;render()}});
+    render();
+  }
+  /* ストップ高・安 */
+  var limAll=MENTIONS.filter(function(m){return m.section==='ストップ高'||m.section==='ストップ安'});
+  makePager('lim-prev','lim-date','lim-next',datesOf(limAll),function(date){
+    var day=limAll.filter(function(m){return m.mentionDate===date});
+    var up=day.filter(function(m){return m.section==='ストップ高'});
+    var dn=day.filter(function(m){return m.section==='ストップ安'});
+    $('limits-list').innerHTML='<h2 class="sec"><span class="up">▲ ストップ高</span> <span style="color:var(--sub);font-size:13px">'+up.length+'件</span></h2>'
+      +(up.length?up.map(caseCard).join(''):'<div class="empty">該当なし</div>')
+      +'<h2 class="sec"><span class="down">▼ ストップ安</span> <span style="color:var(--sub);font-size:13px">'+dn.length+'件</span></h2>'
+      +(dn.length?dn.map(caseCard).join(''):'<div class="empty">該当なし</div>');
+    bindCards($('limits-list'));
+  });
+  /* 引け後の好材料 */
+  var goodsAll=MENTIONS.filter(function(m){return m.section==='引け後の好材料'});
+  makePager('gd-prev','gd-date','gd-next',datesOf(goodsAll),function(date){
+    var goods=goodsAll.filter(function(m){return m.mentionDate===date}).slice().sort(function(a,b){return (b.stars||0)-(a.stars||0)});
+    $('goods-list').innerHTML=goods.length?goods.map(caseCard).join(''):'<div class="empty">該当なし</div>';
+    bindCards($('goods-list'));
+  });
+  /* 個別解説／ニュース */
+  var stAll=MENTIONS.filter(function(m){return m.section==='個別解説'||m.section==='ニュース'});
+  var stFilter='個別解説',stDate=null;
+  function renderStocks(){
+    document.querySelectorAll('#stocks-chips .fchip').forEach(function(ch){
+      var n=stAll.filter(function(m){return m.mentionDate===stDate&&m.section===ch.dataset.f}).length;
+      ch.textContent=ch.dataset.f+' '+n;
+    });
+    var list=stAll.filter(function(m){return m.mentionDate===stDate&&m.section===stFilter});
+    $('stocks-list').innerHTML=list.length?list.map(caseCard).join(''):'<div class="empty">該当なし</div>';
     bindCards($('stocks-list'));
   }
   document.querySelectorAll('#stocks-chips .fchip').forEach(function(ch){
     ch.addEventListener('click',function(){
       document.querySelectorAll('#stocks-chips .fchip').forEach(function(x){x.classList.remove('on')});
-      ch.classList.add('on');renderStocks(ch.dataset.f);
+      ch.classList.add('on');stFilter=ch.dataset.f;renderStocks();
     });
   });
-  renderStocks('個別解説');
+  makePager('st-prev','st-date','st-next',datesOf(stAll),function(date){stDate=date;renderStocks()});
 })();
 
 /* ---------- 台帳 ---------- */
@@ -588,12 +564,12 @@ function goStock(code){if(window.openStockDetail)window.openStockDetail(code)}
     return '<div>市場：'+esc(r[3]||'―')+' ／ 33業種：'+esc(r[4])+' ／ TOPIX区分：'+esc(r[5])+(r[7]?(' ／ 上場日：'+esc(r[7])):'')+'</div>'
       +(men?'<div style="margin-top:5px"><span class="badge b-star">動画で言及</span> <b>'+esc(men.section)+'</b>（'+esc(men.video)+'）'+(men.stars?' '+starsHTML(men.stars):'')+'<br><span style="color:var(--sub)">'+esc(men.said)+'</span></div>':'')
       +'<table class="prices"><tr><th>終値（円）</th>'+heads+'</tr><tr><td>株価</td>'+cells+'</tr></table>'
-      +'<div style="color:var(--sub);font-size:11.5px;margin-top:4px">※ 5月分は一部の銘柄のみ。分割等で水準が大きく変わっている銘柄がある。</div>';
+      +'<div style="color:var(--sub);font-size:11.5px;margin-top:4px">※ 5月分は一部銘柄のみ。分割で水準が変わった銘柄あり。</div>';
   }
   function render(){
     var list=filtered();
-    $('ledger-count').textContent='該当 '+list.length.toLocaleString('ja-JP')+' 件（うち表示 '+Math.min(shown,list.length)+' 件）';
-    $('ledger-list').innerHTML=list.slice(0,shown).map(rowHTML).join('')||'<div class="empty">該当する銘柄はありません</div>';
+    $('ledger-count').textContent=list.length.toLocaleString('ja-JP')+'件（表示 '+Math.min(shown,list.length)+'件）';
+    $('ledger-list').innerHTML=list.slice(0,shown).map(rowHTML).join('')||'<div class="empty">該当なし</div>';
     $('more').style.display=list.length>shown?'block':'none';
     document.querySelectorAll('#ledger-list .srow').forEach(function(el){
       el.addEventListener('click',function(){
@@ -629,8 +605,12 @@ function goStock(code){if(window.openStockDetail)window.openStockDetail(code)}
 
 /* ---------- 動画要約 ---------- */
 (function(){
-  var v=VIDEO,fs=v.fullSummary;
+  var VIDEOS=[VIDEO];
+  var WD=['日','月','火','水','木','金','土'];
+  function dlabel(d){var p=d.split('-');return (+p[0])+'年'+(+p[1])+'月'+(+p[2])+'日（'+WD[new Date(+p[0],+p[1]-1,+p[2]).getDay()]+'）'}
   function li(items){return '<ul>'+items.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>'}
+  function renderVideo(v){
+  var fs=v.fullSummary;
   var picks=v.picks.map(function(p){
     return '<div class="pick"><div style="flex:1;min-width:0"><span class="code">'+esc(p.code)+'</span> <span class="sname">'+esc(p.name)+'</span> '+starsHTML(p.stars)
       +'<div class="rs">'+esc(p.reason)+'</div></div><div class="num" style="text-align:right"><div style="font-weight:900">'+fmt(p.priceAtVideo)+'円</div><div style="font-size:11.5px;color:var(--sub)">動画時点</div></div></div>';
@@ -639,16 +619,29 @@ function goStock(code){if(window.openStockDetail)window.openStockDetail(code)}
     '<div class="card"><div style="display:flex;gap:6px;flex-wrap:wrap"><span class="badge b-ch">ゴリコロ</span><span class="badge b-sec num">公開 '+v.published+'</span><span class="badge b-sec num">対象日 '+v.targetDate+'</span></div>'
     +'<div class="vtitle">'+esc(v.title)+'</div>'
     +'<a class="yt" href="'+esc(v.url)+'" target="_blank" rel="noopener">YouTubeで見る</a>'
-    +'<p style="font-size:12.5px;color:var(--sub);margin:9px 0 0">星の意味：★ 株価上昇期待 ／ ★★ 大幅上昇期待 ／ ★★★ ストップ高濃厚（要約では宣伝パートを除く）</p></div>'
-    +'<h2 class="sec">引け後の好材料 ― 注目株まとめ表</h2>'
+    +'<p style="font-size:12.5px;color:var(--sub);margin:9px 0 0">★＝上昇期待の強さ。宣伝パートは除く。</p></div>'
+    +'<h2 class="sec">注目株まとめ</h2>'
     +'<div class="card" style="padding-top:4px;padding-bottom:4px">'+picks+'</div>'
-    +'<h2 class="sec">要約の全文</h2>'
+    +'<h2 class="sec">要約全文</h2>'
     +'<details class="sum" open><summary>NY市場の振り返り</summary><div class="body">'+esc(fs.nyReview)+'</div></details>'
     +'<details class="sum"><summary>東京市場の振り返り</summary><div class="body">'+esc(fs.tokyoReview)+'</div></details>'
     +'<details class="sum"><summary>個別解説（銘柄別）</summary><div class="body">'+li(fs.tokyoStocks)+'</div></details>'
     +'<details class="sum"><summary>ストップ高・ストップ安</summary><div class="body">'+li(fs.limitUpDown)+'</div></details>'
     +'<details class="sum"><summary>気になったニュース</summary><div class="body">'+li(fs.news)+'</div></details>'
     +'<details class="sum"><summary>締め ― 今後の見通し</summary><div class="body">'+esc(fs.closing)+'</div></details>';
+  }
+  var vdates=VIDEOS.map(function(v){return v.published}).sort().reverse();
+  var vidx=0;
+  function render(){
+    $('vd-date').textContent=dlabel(vdates[vidx]);
+    $('vd-prev').disabled=(vidx>=vdates.length-1);
+    $('vd-next').disabled=(vidx<=0);
+    var v=null;VIDEOS.forEach(function(x){if(x.published===vdates[vidx])v=x});
+    if(v)renderVideo(v);else $('video-main').innerHTML='<div class="empty">記録なし</div>';
+  }
+  $('vd-prev').addEventListener('click',function(){if(vidx<vdates.length-1){vidx++;render()}});
+  $('vd-next').addEventListener('click',function(){if(vidx>0){vidx--;render()}});
+  render();
 })();
 </script>
 </body>
