@@ -261,6 +261,11 @@ footer{max-width:1080px;margin:0 auto;padding:0 14px 34px;font-size:12px;color:v
 .cal-day.has:hover{border-color:var(--navy2)}
 .cal-day.sel{background:var(--navy);color:#fff;border-color:var(--navy)}
 .cal-day:disabled{opacity:.3;cursor:default;background:none;border-color:transparent;font-weight:400}
+.cal-day.hol{color:var(--up);font-weight:700}
+.cal-day.hol:disabled{opacity:.6}
+.cal-day.sel.hol{color:#fff}
+.cal-hols{font-size:11.5px;color:var(--sub);margin:8px 0 0;text-align:center;line-height:1.5}
+.cal-hols b{color:var(--up);font-weight:700}
 .cal-note{font-size:11.5px;color:var(--sub);margin:9px 0 0;text-align:center}
 .cal-close{display:block;width:100%;margin-top:9px;appearance:none;border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:9px;padding:9px;font-size:13.5px;font-weight:700;cursor:pointer}
 
@@ -406,7 +411,8 @@ table.hist tr:last-child td{border-bottom:0}
       <span class="cal-wd sun">日</span><span class="cal-wd">月</span><span class="cal-wd">火</span><span class="cal-wd">水</span><span class="cal-wd">木</span><span class="cal-wd">金</span><span class="cal-wd sat">土</span>
     </div>
     <div class="cal-grid" id="cal-grid"></div>
-    <p class="cal-note">選べるのは、データのある日だけです。</p>
+    <p class="cal-hols" id="cal-hols"></p>
+    <p class="cal-note">選べるのは、データのある日だけです。祝日は赤字で表示しています。</p>
     <button type="button" class="cal-close" id="cal-close">閉じる</button>
   </div>
 </div>
@@ -497,6 +503,50 @@ infobtn.addEventListener('click',function(){
 });
 function goStock(code){if(window.openStockDetail)window.openStockDetail(code)}
 
+/* ---------- 日本の祝日（振替休日・国民の休日を含む） ---------- */
+var HOL_CACHE={};
+function buildHolidays(y){
+  if(HOL_CACHE[y])return HOL_CACHE[y];
+  var map={};
+  function key(m,d){return y+'-'+('0'+(m+1)).slice(-2)+'-'+('0'+d).slice(-2)}
+  function add(m,d,name){map[key(m,d)]=name}
+  function nthMonday(m,n){var dow=new Date(y,m,1).getDay();return 1+((8-dow)%7)+7*(n-1)}
+  add(0,1,'元日');
+  add(0,nthMonday(0,2),'成人の日');
+  add(1,11,'建国記念の日');
+  add(1,23,'天皇誕生日');
+  add(2,Math.floor(20.8431+0.242194*(y-1980))-Math.floor((y-1980)/4),'春分の日');
+  add(3,29,'昭和の日');
+  add(4,3,'憲法記念日');
+  add(4,4,'みどりの日');
+  add(4,5,'こどもの日');
+  add(6,nthMonday(6,3),'海の日');
+  add(7,11,'山の日');
+  add(8,nthMonday(8,3),'敬老の日');
+  add(8,Math.floor(23.2488+0.242194*(y-1980))-Math.floor((y-1980)/4),'秋分の日');
+  add(9,nthMonday(9,2),'スポーツの日');
+  add(10,3,'文化の日');
+  add(10,23,'勤労感謝の日');
+  function keyOf(dt){return dt.getFullYear()+'-'+('0'+(dt.getMonth()+1)).slice(-2)+'-'+('0'+dt.getDate()).slice(-2)}
+  /* 国民の休日：前日と翌日が祝日の平日 */
+  Object.keys(map).forEach(function(k){
+    var p=k.split('-');var dt=new Date(+p[0],+p[1]-1,+p[2]+2);
+    var mid=new Date(+p[0],+p[1]-1,+p[2]+1);
+    var mk=keyOf(mid);
+    if(map[keyOf(dt)]&&!map[mk]&&mid.getDay()>=1&&mid.getDay()<=5)map[mk]='国民の休日';
+  });
+  /* 振替休日：祝日が日曜のとき、次の祝日でない日 */
+  Object.keys(map).forEach(function(k){
+    var p=k.split('-');var dt=new Date(+p[0],+p[1]-1,+p[2]);
+    if(dt.getDay()!==0)return;
+    var nx=new Date(dt);
+    do{nx.setDate(nx.getDate()+1)}while(map[keyOf(nx)]);
+    map[keyOf(nx)]='振替休日';
+  });
+  HOL_CACHE[y]=map;
+  return map;
+}
+
 /* ---------- 日付カレンダー（データのある日だけ選べる） ---------- */
 var calState=null;
 function calRender(){
@@ -505,18 +555,23 @@ function calRender(){
   $('cal-title').textContent=y+'年'+(m+1)+'月';
   var startDow=new Date(y,m,1).getDay();
   var dim=new Date(y,m+1,0).getDate();
+  var holmap=buildHolidays(y);
   var html='';
+  var hols=[];
   for(var i=0;i<startDow;i++)html+='<span></span>';
   for(var d=1;d<=dim;d++){
     var ds=y+'-'+('0'+(m+1)).slice(-2)+'-'+('0'+d).slice(-2);
     var dow=new Date(y,m,d).getDay();
     var has=!!st.set[ds];
+    var hol=holmap[ds]||null;
     var cls='cal-day num'+(dow===0?' sun':(dow===6?' sat':''));
+    if(hol){cls+=' hol';hols.push(d+'日 '+hol)}
     if(has)cls+=' has';
     if(ds===st.current)cls+=' sel';
-    html+='<button type="button" class="'+cls+'" data-d="'+ds+'"'+(has?'':' disabled')+'>'+d+'</button>';
+    html+='<button type="button" class="'+cls+'" data-d="'+ds+'"'+(has?'':' disabled')+(hol?' title="'+hol+'"':'')+'>'+d+'</button>';
   }
   $('cal-grid').innerHTML=html;
+  $('cal-hols').innerHTML=hols.length?('今月の祝日：'+hols.map(function(h){return '<b>'+h+'</b>'}).join(' ・ ')):'';
   $('cal-prev').disabled=(y<st.minY||(y===st.minY&&m<=st.minM));
   $('cal-next').disabled=(y>st.maxY||(y===st.maxY&&m>=st.maxM));
   document.querySelectorAll('#cal-grid .cal-day.has').forEach(function(b){
